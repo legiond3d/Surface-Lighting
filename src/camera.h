@@ -1,11 +1,11 @@
-#ifndef CAMERA_H//чтобы подключать директивы только 1 раз
+#ifndef CAMERA_H//С‡С‚РѕР±С‹ РїРѕРґРєР»СЋС‡Р°С‚СЊ РґРёСЂРµРєС‚РёРІС‹ С‚РѕР»СЊРєРѕ 1 СЂР°Р·
 #define CAMERA_H
 
 #include<GL/glew.h>
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
 
-enum camera_movement//перечисление с возможными вариантами направления движения камеры
+enum camera_movement//РїРµСЂРµС‡РёСЃР»РµРЅРёРµ СЃ РІРѕР·РјРѕР¶РЅС‹РјРё РІР°СЂРёР°РЅС‚Р°РјРё РЅР°РїСЂР°РІР»РµРЅРёСЏ РґРІРёР¶РµРЅРёСЏ РєР°РјРµСЂС‹
 {
 	FORWARD,
 	BACKWARD,
@@ -14,47 +14,47 @@ enum camera_movement//перечисление с возможными вариантами направления движения 
 	UP,
 	DOWN
 };
-//характеристики камеры по умолчанию
-const GLfloat YAW = -90.0f;//значение рысканья
-const GLfloat PITCH = 0.0f;//значение тангажа
-const GLfloat SPEED = 3.0f;//скорость движения(полёта) камеры
-const GLfloat SENS = 0.1f;//чувствительность мыши
-const GLfloat ZOOM = 45.0f;//начальное приближение угла обзора
+//С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РєР°РјРµСЂС‹ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+const GLfloat YAW = -90.0f;//Р·РЅР°С‡РµРЅРёРµ СЂС‹СЃРєР°РЅСЊСЏ
+const GLfloat PITCH = 0.0f;//Р·РЅР°С‡РµРЅРёРµ С‚Р°РЅРіР°Р¶Р°
+const GLfloat SPEED = 3.0f;//СЃРєРѕСЂРѕСЃС‚СЊ РґРІРёР¶РµРЅРёСЏ(РїРѕР»С‘С‚Р°) РєР°РјРµСЂС‹
+const GLfloat SENS = 0.1f;//С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ РјС‹С€Рё
+const GLfloat ZOOM = 45.0f;//РЅР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ СѓРіР»Р° РѕР±Р·РѕСЂР°
 
-class camera//класс свободной камеры 
+class camera//РєР»Р°СЃСЃ СЃРІРѕР±РѕРґРЅРѕР№ РєР°РјРµСЂС‹ 
 {
 private:
-	void update_camera_vectors()//вычисляется новый Front вектор в зависимости от углов эйлера направления обзора камеры
+	void update_camera_vectors()//РІС‹С‡РёСЃР»СЏРµС‚СЃСЏ РЅРѕРІС‹Р№ Front РІРµРєС‚РѕСЂ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СѓРіР»РѕРІ СЌР№Р»РµСЂР° РЅР°РїСЂР°РІР»РµРЅРёСЏ РѕР±Р·РѕСЂР° РєР°РјРµСЂС‹
 	{
-		glm::vec3 front;//вектор направления
-		//вычисляем результирующий вектор направления
+		glm::vec3 front;//РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
+		//РІС‹С‡РёСЃР»СЏРµРј СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 		front.x = cos(glm::radians(this->Yaw))*cos(glm::radians(this->Pitch));
 		front.y = sin(glm::radians(this->Pitch));
 		front.z = sin(glm::radians(this->Yaw))*cos(glm::radians(this->Pitch));
-		this->Front = glm::normalize(front);//нормализируем вектор направления
-		//пересчитываем вектора Right и UP и нормализуем их
+		this->Front = glm::normalize(front);//РЅРѕСЂРјР°Р»РёР·РёСЂСѓРµРј РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
+		//РїРµСЂРµСЃС‡РёС‚С‹РІР°РµРј РІРµРєС‚РѕСЂР° Right Рё UP Рё РЅРѕСЂРјР°Р»РёР·СѓРµРј РёС…
 		this->Up = glm::normalize(glm::cross(this->Right, this->Front));
 		this->Right = glm::normalize(glm::cross(this->Front, this->World_up));
 	}
 public:
-	//атрибуты камеры:
-	glm::vec3 Position;//позиция камеры, некоторая точка с направлением обзора
-	//мы используем правую систему координат
-	glm::vec3 Front;//ось z, которая направлена на наблюдателя
-	glm::vec3 Up;//ось y, которая направлена вверх
-	glm::vec3 Right;//ось х, которая направлена вправо
-	glm::vec3 World_up;//нормализованный вектор по у
+	//Р°С‚СЂРёР±СѓС‚С‹ РєР°РјРµСЂС‹:
+	glm::vec3 Position;//РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹, РЅРµРєРѕС‚РѕСЂР°СЏ С‚РѕС‡РєР° СЃ РЅР°РїСЂР°РІР»РµРЅРёРµРј РѕР±Р·РѕСЂР°
+	//РјС‹ РёСЃРїРѕР»СЊР·СѓРµРј РїСЂР°РІСѓСЋ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚
+	glm::vec3 Front;//РѕСЃСЊ z, РєРѕС‚РѕСЂР°СЏ РЅР°РїСЂР°РІР»РµРЅР° РЅР° РЅР°Р±Р»СЋРґР°С‚РµР»СЏ
+	glm::vec3 Up;//РѕСЃСЊ y, РєРѕС‚РѕСЂР°СЏ РЅР°РїСЂР°РІР»РµРЅР° РІРІРµСЂС…
+	glm::vec3 Right;//РѕСЃСЊ С…, РєРѕС‚РѕСЂР°СЏ РЅР°РїСЂР°РІР»РµРЅР° РІРїСЂР°РІРѕ
+	glm::vec3 World_up;//РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹Р№ РІРµРєС‚РѕСЂ РїРѕ Сѓ
 
-	//эйлеровы углы:
-	GLfloat Yaw;//рысканье
-	GLfloat Pitch;//тангаж
+	//СЌР№Р»РµСЂРѕРІС‹ СѓРіР»С‹:
+	GLfloat Yaw;//СЂС‹СЃРєР°РЅСЊРµ
+	GLfloat Pitch;//С‚Р°РЅРіР°Р¶
 
-	//характеристики камеры:
-	GLfloat movement_speed;//скорость передвижения
-	GLfloat mouse_sens;//чувствительность камеры (чувствительность мыши)
-	GLfloat Zoom;//масштаб (угол обзора)
+	//С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РєР°РјРµСЂС‹:
+	GLfloat movement_speed;//СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРґРІРёР¶РµРЅРёСЏ
+	GLfloat mouse_sens;//С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ РєР°РјРµСЂС‹ (С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ РјС‹С€Рё)
+	GLfloat Zoom;//РјР°СЃС€С‚Р°Р± (СѓРіРѕР» РѕР±Р·РѕСЂР°)
 
-	camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), GLfloat yaw = YAW, GLfloat pitch = PITCH) :Front(glm::vec3(0.0f, 0.0f, -1.0f)), movement_speed(SPEED), mouse_sens(SENS), Zoom(ZOOM)//конструктор класса с векторами
+	camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), GLfloat yaw = YAW, GLfloat pitch = PITCH) :Front(glm::vec3(0.0f, 0.0f, -1.0f)), movement_speed(SPEED), mouse_sens(SENS), Zoom(ZOOM)//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° СЃ РІРµРєС‚РѕСЂР°РјРё
 	{
 		this->Position = position;
 		this->World_up = up;
@@ -62,7 +62,7 @@ public:
 		this->Pitch = pitch;
 		this->update_camera_vectors();
 	}
-	camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) :Front(glm::vec3(0.0f, 0.0f, -1.0f)), movement_speed(SPEED), mouse_sens(SENS), Zoom(ZOOM)//конструктор со скалярными значениями
+	camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) :Front(glm::vec3(0.0f, 0.0f, -1.0f)), movement_speed(SPEED), mouse_sens(SENS), Zoom(ZOOM)//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃРѕ СЃРєР°Р»СЏСЂРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё
 	{
 		this->Position = glm::vec3(posX, posY, posZ);
 		this->World_up = glm::vec3(upX, upY, upZ);
@@ -70,13 +70,13 @@ public:
 		this->Pitch = pitch;
 		this->update_camera_vectors();
 	}
-	glm::mat4 get_view_matrix()//возвращаем матрицу вида (наблюдателя)
+	glm::mat4 get_view_matrix()//РІРѕР·РІСЂР°С‰Р°РµРј РјР°С‚СЂРёС†Сѓ РІРёРґР° (РЅР°Р±Р»СЋРґР°С‚РµР»СЏ)
 	{
 		return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
 	}
-	void process_keyboard(camera_movement direction, GLfloat delta_time)//метод, отвечающий за перемещение камеры в зависимости от выбранного направления движения
+	void process_keyboard(camera_movement direction, GLfloat delta_time)//РјРµС‚РѕРґ, РѕС‚РІРµС‡Р°СЋС‰РёР№ Р·Р° РїРµСЂРµРјРµС‰РµРЅРёРµ РєР°РјРµСЂС‹ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ РґРІРёР¶РµРЅРёСЏ
 	{
-		GLfloat velocity = this->movement_speed*delta_time;//определяем скорость движения камеры, как желаемая скорость умноженная на время, которое затрачивается на прорисовку кадра
+		GLfloat velocity = this->movement_speed*delta_time;//РѕРїСЂРµРґРµР»СЏРµРј СЃРєРѕСЂРѕСЃС‚СЊ РґРІРёР¶РµРЅРёСЏ РєР°РјРµСЂС‹, РєР°Рє Р¶РµР»Р°РµРјР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ СѓРјРЅРѕР¶РµРЅРЅР°СЏ РЅР° РІСЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ Р·Р°С‚СЂР°С‡РёРІР°РµС‚СЃСЏ РЅР° РїСЂРѕСЂРёСЃРѕРІРєСѓ РєР°РґСЂР°
 		if (direction == FORWARD)
 			this->Position += this->Front*velocity;
 		if (direction == BACKWARD)
@@ -90,13 +90,13 @@ public:
 		if (direction == DOWN)
 			this->Position -= this->Up*velocity;
 	}
-	void process_mouse_movement(GLfloat xoffset, GLfloat yoffset, GLboolean extra_pitch = true)//функция для определения смещения взгляда камеры, полученное от движения мышью
+	void process_mouse_movement(GLfloat xoffset, GLfloat yoffset, GLboolean extra_pitch = true)//С„СѓРЅРєС†РёСЏ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ СЃРјРµС‰РµРЅРёСЏ РІР·РіР»СЏРґР° РєР°РјРµСЂС‹, РїРѕР»СѓС‡РµРЅРЅРѕРµ РѕС‚ РґРІРёР¶РµРЅРёСЏ РјС‹С€СЊСЋ
 	{
 		xoffset *= this->mouse_sens;
 		yoffset *= this->mouse_sens;
 		this->Yaw += xoffset;
 		this->Pitch += yoffset;
-		//ограничения для угла тангажа, чтобы нельзя было смотреть под углом 90 градусов вверх или вниз
+		//РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РґР»СЏ СѓРіР»Р° С‚Р°РЅРіР°Р¶Р°, С‡С‚РѕР±С‹ РЅРµР»СЊР·СЏ Р±С‹Р»Рѕ СЃРјРѕС‚СЂРµС‚СЊ РїРѕРґ СѓРіР»РѕРј 90 РіСЂР°РґСѓСЃРѕРІ РІРІРµСЂС… РёР»Рё РІРЅРёР·
 		if (extra_pitch)
 		{
 			if (this->Pitch > 89.0f)
@@ -104,16 +104,16 @@ public:
 			if (this->Pitch < -89.0f)
 				this->Pitch = -89.0f;
 		}
-		this->update_camera_vectors();//пересчитываем вектора с использованием углов эйлера
+		this->update_camera_vectors();//РїРµСЂРµСЃС‡РёС‚С‹РІР°РµРј РІРµРєС‚РѕСЂР° СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј СѓРіР»РѕРІ СЌР№Р»РµСЂР°
 	}
-	void process_mouse_scroll(GLfloat yoffset)//функия изменения угла обзора при прокрутки колёсика мышки
+	void process_mouse_scroll(GLfloat yoffset)//С„СѓРЅРєРёСЏ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° РѕР±Р·РѕСЂР° РїСЂРё РїСЂРѕРєСЂСѓС‚РєРё РєРѕР»С‘СЃРёРєР° РјС‹С€РєРё
 	{
 		if (this->Zoom >= 1.0f&&this->Zoom <= 45.0f)
 			this->Zoom -= yoffset;
 		if (this->Zoom <= 1.0f)
-			this->Zoom = 1.0f;//минимальный угол обзора 1 градус
+			this->Zoom = 1.0f;//РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» РѕР±Р·РѕСЂР° 1 РіСЂР°РґСѓСЃ
 		if (this->Zoom >= 45.0f)
-			this->Zoom = 45.0f;//максимальный угол обзора 45 градусов
+			this->Zoom = 45.0f;//РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» РѕР±Р·РѕСЂР° 45 РіСЂР°РґСѓСЃРѕРІ
 	}
 };
 #endif
